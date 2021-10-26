@@ -1,5 +1,5 @@
 """
-Use Selenium version 3 for this code
+Use Selenium version 3 for this code, version 4 has different syntax
 """
 # necessary libraries and modules
 from selenium import webdriver
@@ -18,7 +18,9 @@ driver = webdriver.Chrome("C:/zadachki/Different_Upwork_Projects/chromedriver_wi
 driver.get("https://en.comparis.ch/immobilien/result/list?requestobject=%7B%22DealType%22%3A10%2C%22SiteId%22%3A-1%2C%22RootPropertyTypes%22%3A%5B%5D%2C%22PropertyTypes%22%3Anull%2C%22RoomsFrom%22%3A%22-10%22%2C%22RoomsTo%22%3Anull%2C%22FloorSearchType%22%3A0%2C%22LivingSpaceFrom%22%3Anull%2C%22LivingSpaceTo%22%3Anull%2C%22PriceFrom%22%3Anull%2C%22PriceTo%22%3A%22-10%22%2C%22ComparisPointsMin%22%3A-1%2C%22AdAgeMax%22%3A-1%2C%22AdAgeInHoursMax%22%3Anull%2C%22Keyword%22%3Anull%2C%22WithImagesOnly%22%3Anull%2C%22WithPointsOnly%22%3Anull%2C%22Radius%22%3Anull%2C%22MinAvailableDate%22%3Anull%2C%22MinChangeDate%22%3Anull%2C%22LocationSearchString%22%3A%22Geneve%22%2C%22Sort%22%3A11%2C%22HasBalcony%22%3Afalse%2C%22HasTerrace%22%3Afalse%2C%22HasFireplace%22%3Afalse%2C%22HasDishwasher%22%3Afalse%2C%22HasWashingMachine%22%3Afalse%2C%22HasLift%22%3Afalse%2C%22HasParking%22%3Afalse%2C%22PetsAllowed%22%3Afalse%2C%22MinergieCertified%22%3Afalse%2C%22WheelchairAccessible%22%3Afalse%2C%22LowerLeftLatitude%22%3Anull%2C%22LowerLeftLongitude%22%3Anull%2C%22UpperRightLatitude%22%3Anull%2C%22UpperRightLongitude%22%3Anull%7D&page=0")
 time.sleep(2)
 
+
 # scraping the number of hits found
+# we need this number if want to scrape links from all pages, specify it in range() in the next block
 print("Checking how many apartments there are on a website...\n\n")
 num_hits_raw = driver.find_element_by_xpath('//html/body/div/div/div/div/div/div/div/div/div/div/p/strong').get_attribute("innerText") # long comment
 num_hits = int(re.match("(^\d*(?:\,)\d*)", num_hits_raw).group(0).replace(",", ""))
@@ -28,7 +30,7 @@ print("There are {} items found at the website.\n\n".format(num_hits))
 # scraping all the links and saving them into "links" list
 last_page = int(num_hits/10+2)
 links = []
-# here I am scraping only from 5 pages
+# here I am scraping only from 5 pages (number of pages needed +2)
 # to scrape all, change the second number in range() to last_page
 for i in range(2, 7):
     try:
@@ -46,7 +48,8 @@ for i in range(2, 7):
         print("Having problems")
 print("There are {} links found.\n\n".format(len(links)))
 
-# scraping info from each link
+
+# scraping info from each link into lists
 address = []
 agent = []
 found_on = []
@@ -110,8 +113,8 @@ for link in links:
         descriptions.append(["No description found."])
     time.sleep(2)
 
+# saving scraped info into a single dataframe
 print("Saving scraped info into a dataframe and .csv\n\n")
-# using pandas to create a dataframe from all the lists
 df = pd.DataFrame({"Link" : links, "Address": address, "Agent": agent, "Found on" : found_on, "Key data" : key_data, "Description" : descriptions})
 
 # removing all the brackets from the final dataframe
@@ -120,6 +123,7 @@ for col in df:
     df[col] = df[col].astype(str).str.replace("{", "").str.replace("}", "")
 
 # saving the dataframe to a csv file
+# change the name if needed
 df.to_csv("Comparis_web_scraping.csv", index=False)
 print("Done with all the tasks!\n\n")
 
