@@ -23,7 +23,7 @@ time.sleep(2)
 # we need this number if want to scrape links from all pages, specify it in range() in the next block
 print("Checking how many apartments there are on a website...\n\n")
 num_hits_raw = driver.find_element_by_xpath('//html/body/div/div/div/div/div/div/div/div/div/div/p/strong').get_attribute("innerText") # long comment
-num_hits = int(re.match("(^\d*(?:\,)\d*)", num_hits_raw).group(0).replace(",", ""))
+num_hits = int(re.match("(^\d*)", num_hits_raw).group(0).replace(",", ""))
 print("There are {} items found at the website.\n\n".format(num_hits))
 
 
