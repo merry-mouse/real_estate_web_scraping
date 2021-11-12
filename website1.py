@@ -7,6 +7,8 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import re
 import pandas as pd
+import requests
+import os
 
 # open the browser
 print("Openning browser...\n\n")
