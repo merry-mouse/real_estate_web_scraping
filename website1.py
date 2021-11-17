@@ -62,9 +62,10 @@ key_data = []
 descriptions = []
 print("Scraping key info from each link...\n\n")
 for num, link in enumerate(links):
+    # going through each apartment
     url = link
     driver.get(url)
-    # Scraping ADDRESS (map)
+    # Scraping ADDRESS (one that's above the map)
     try:
         address1 = driver.find_element_by_css_selector("h5").get_attribute("innerText")
         address.append(address1)
@@ -78,7 +79,8 @@ for num, link in enumerate(links):
     except NoSuchElementException:
         agent.append("NO AGENT INFO")
 
-    # Scraping FOUND ON
+    # Scraping FOUND ON which represents names of websites where apartment was found
+    # requires 2 steps, sometimes there are more than 1 website
     # step 1
     try:
         found1 = [
@@ -99,7 +101,7 @@ for num, link in enumerate(links):
     hdrs = driver.find_elements_by_class_name("css-cyiock.excbu0j2")
     undrhdrs = driver.find_elements_by_class_name("css-1ush3w6.excbu0j2")
     keyd_dict = {k.get_attribute("innerText"): v.get_attribute("innerText") for k, v in zip(hdrs, undrhdrs)}
-    # changing empty values to "Available"
+    # changing empty values to "Available" since instead of text there can be check marks
     empty = ""
     # initializing replace value
     repl_val = "Available"
@@ -117,10 +119,11 @@ for num, link in enumerate(links):
     except NoSuchElementException:
         descriptions.append(["No description found."])
 
-    # COUNT NUMBER OF SMALL CIRCLES, ADD 1
+    # COUNT NUMBER OF SMALL CIRCLES THAT REPRESENTS NUMBER OF PHOTOS
+    # add 1 if you want your code inform you about the number of found photos (for debugging)
     circles = len(driver.find_elements_by_class_name("svg-inline--fa.fa-circle.fa-w-16.css-1xkwzfp"))
     print("for apartment {}, {} photos found at the website.".format(num, circles + 1))
-    # CREATE A SET TO GET RID OF DUPLICATES
+    # CREATE A SET TO AVOID DUPLICATES
     images_urls = set()
     for n in range(circles):
         # FIND IMAGE CONTAINERS
@@ -133,6 +136,7 @@ for num, link in enumerate(links):
             time.sleep(0.2)
 
     # DOWNLOAD PHOTOS IN "APARTMENTS" AND CREATE NEW FOLDER FOR EACH APARTMENT
+    # replace path with the directory where you want to store photos
     for i in images_urls:
         path = "C:/Users/potek/Jupyter_projects/APARTMENTS/{}".format(num)
         if not os.path.exists(path):
