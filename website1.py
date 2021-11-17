@@ -18,11 +18,11 @@ print("Openning browser...\n\n")
 driver = webdriver.Chrome("C:/Users/potek/Jupyter_projects/chromedriver_win32/chromedriver.exe")
 # open the url you would like to request
 driver.get("https://en.comparis.ch/immobilien/marktplatz/luzern/mieten")
-time.sleep(2)
+time.sleep(0.5)
 
 
 # scraping the number of hits found
-# we need this number if want to scrape links from all pages, specify it in range() in the next block
+# we need it ONLY if want to scrape links from all pages, specify it in range() in the next block
 print("Checking how many apartments there are on a website...\n\n")
 num_hits_raw = driver.find_element_by_xpath('//html/body/div/div/div/div/div/div/div/div/div/div/p/strong').get_attribute("innerText") # long comment
 num_hits = int(re.match("(^\d*(?:\,)\d*)", num_hits_raw).group(0).replace(",", ""))
@@ -32,18 +32,21 @@ print("There are {} items found at the website.\n\n".format(num_hits))
 # scraping all the links and saving them into "links" list
 last_page = int(num_hits/10+2)
 links = []
-# here I am scraping only from 1 page
+# here I am scraping only from 2 pages (20 apartments)
 # to scrape all, change the second number in range() to last_page
 for i in range(2, 4):
     try:
+        # takes time for page to upload, must scroll down to be able to scrape all info
         driver.execute_script("window.scrollTo(0, 1900);")
         time.sleep(1)
         driver.execute_script("window.scrollTo(0, window.scrollY + 1100)")
         time.sleep(1)
+        # scraping apartments' containers and links to them inside
         containers = driver.find_elements_by_class_name("css-ctytwt.excbu0j5")
         for container in containers:
             link = container.find_element_by_css_selector("a").get_attribute("href")
             links.append(link)
+        # click to the next page
         driver.find_element_by_xpath(("//a[text()='{}']").format(i)).click()
         time.sleep(2)
     except NoSuchElementException:
