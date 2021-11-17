@@ -15,9 +15,9 @@ print("Openning browser...\n\n")
 
 # initialize automated browser window, specify the browser we want to use
 # store the path of the driver file in the brackets
-driver = webdriver.Chrome("C:/zadachki/Different_Upwork_Projects/chromedriver_win32/chromedriver.exe")
+driver = webdriver.Chrome("C:/Users/potek/Jupyter_projects/chromedriver_win32/chromedriver.exe")
 # open the url you would like to request
-driver.get("https://en.comparis.ch/immobilien/result/list?requestobject=%7B%22DealType%22%3A10%2C%22SiteId%22%3A-1%2C%22RootPropertyTypes%22%3A%5B%5D%2C%22PropertyTypes%22%3Anull%2C%22RoomsFrom%22%3A%22-10%22%2C%22RoomsTo%22%3Anull%2C%22FloorSearchType%22%3A0%2C%22LivingSpaceFrom%22%3Anull%2C%22LivingSpaceTo%22%3Anull%2C%22PriceFrom%22%3Anull%2C%22PriceTo%22%3A%22-10%22%2C%22ComparisPointsMin%22%3A-1%2C%22AdAgeMax%22%3A-1%2C%22AdAgeInHoursMax%22%3Anull%2C%22Keyword%22%3Anull%2C%22WithImagesOnly%22%3Anull%2C%22WithPointsOnly%22%3Anull%2C%22Radius%22%3Anull%2C%22MinAvailableDate%22%3Anull%2C%22MinChangeDate%22%3Anull%2C%22LocationSearchString%22%3A%22Geneve%22%2C%22Sort%22%3A11%2C%22HasBalcony%22%3Afalse%2C%22HasTerrace%22%3Afalse%2C%22HasFireplace%22%3Afalse%2C%22HasDishwasher%22%3Afalse%2C%22HasWashingMachine%22%3Afalse%2C%22HasLift%22%3Afalse%2C%22HasParking%22%3Afalse%2C%22PetsAllowed%22%3Afalse%2C%22MinergieCertified%22%3Afalse%2C%22WheelchairAccessible%22%3Afalse%2C%22LowerLeftLatitude%22%3Anull%2C%22LowerLeftLongitude%22%3Anull%2C%22UpperRightLatitude%22%3Anull%2C%22UpperRightLongitude%22%3Anull%7D&page=0")
+driver.get("https://en.comparis.ch/immobilien/marktplatz/luzern/mieten")
 time.sleep(2)
 
 
@@ -32,9 +32,9 @@ print("There are {} items found at the website.\n\n".format(num_hits))
 # scraping all the links and saving them into "links" list
 last_page = int(num_hits/10+2)
 links = []
-# here I am scraping only from 5 pages (number of pages needed +2)
+# here I am scraping only from 1 page
 # to scrape all, change the second number in range() to last_page
-for i in range(2, 7):
+for i in range(2, 4):
     try:
         driver.execute_script("window.scrollTo(0, 1900);")
         time.sleep(1)
@@ -58,7 +58,7 @@ found_on = []
 key_data = []
 descriptions = []
 print("Scraping key info from each link...\n\n")
-for link in links:
+for num, link in enumerate(links):
     url = link
     driver.get(url)
     # Scraping ADDRESS (map)
@@ -113,7 +113,35 @@ for link in links:
         descriptions.append(description)
     except NoSuchElementException:
         descriptions.append(["No description found."])
-    time.sleep(2)
+
+    # COUNT NUMBER OF SMALL CIRCLES, ADD 1
+    circles = len(driver.find_elements_by_class_name("svg-inline--fa.fa-circle.fa-w-16.css-1xkwzfp"))
+    print("for apartment {}, {} photos found at the website.".format(num, circles + 1))
+    # CREATE A SET TO GET RID OF DUPLICATES
+    images_urls = set()
+    for n in range(circles):
+        # FIND IMAGE CONTAINERS
+        images_containers = driver.find_element_by_class_name("css-ze3zoq").find_elements_by_tag_name("img")
+        for image in images_containers:
+            # FIND IMAGES' URLS, STORE THEM IN A SET
+            images_urls.update([image.get_attribute("src")])
+            # FIND BUTTON THAT SCROLL TO THE RIGHT AND CLICK IT
+            driver.find_element_by_class_name("css-11m3oda.excbu0j2").click()
+            time.sleep(0.2)
+
+    # DOWNLOAD PHOTOS IN "APARTMENTS" AND CREATE NEW FOLDER FOR EACH APARTMENT
+    for i in images_urls:
+        path = "C:/Users/potek/Jupyter_projects/APARTMENTS/{}".format(num)
+        if not os.path.exists(path):
+            os.mkdir(path)
+        with open(os.path.join(path, "Comparis" + str(time.time()) + ".jpg"), "wb") as f:
+            try:
+                # DOWNLOAD CONTENT OF THE URL
+                f.write(requests.get(i).content)
+            except:
+                pass
+    time.sleep(0.2)
+
 
 # saving scraped info into a single dataframe
 print("Saving scraped info into a dataframe and .csv\n\n")
