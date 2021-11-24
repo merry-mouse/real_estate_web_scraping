@@ -20,3 +20,4 @@ driver = webdriver.Firefox(executable_path="C:\\Users\\potek\\Jupyter_projects\\
 driver.get("https://www.immobilier.ch/en/rent/apartment-house/vaud/lausanne")#comment
 time.sleep(2)
 
+
