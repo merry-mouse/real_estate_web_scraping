@@ -1,4 +1,3 @@
-# NOT FINISHED
 # website for scraping: immobilier.ch
 
 # importing necessary libraries and modules
