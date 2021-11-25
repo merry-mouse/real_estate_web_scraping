@@ -77,7 +77,7 @@ for num, link in enumerate(links):
     except NoSuchElementException:
         addresses.append("NO ADDRESS INFO")
 
-        # SQM
+    # SQM
     try:
         SQM = driver.find_element_by_class_name("title").get_attribute("innerText")
         sqms.append(SQM)
@@ -106,8 +106,8 @@ for num, link in enumerate(links):
     try:
         description = driver.find_element_by_class_name("im__postContent__body").find_element_by_tag_name(
             "p").get_attribute("innerText")  # comment
-        descriptions.append(description.replace("\n", "; "))
-    except NoSuchElementException:
+        descriptions.append(description.replace("\n", " "))
+    except NoSuchElementException or description == "":
         descriptions.append("NO DESCRIPTION")
 
     # "ABOUT" TABLE
@@ -132,7 +132,7 @@ for num, link in enumerate(links):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0"}
     # scrolling down and waiting until all the pictures are rendered
     driver.execute_script("window.scrollTo(0, 3600)")
-    time.sleep(1)
+    time.sleep(1.5)
     try:
         # scraping containers that containers with img tag
         images_container = driver.find_element_by_class_name(
@@ -158,14 +158,16 @@ for num, link in enumerate(links):
     time.sleep(0.5)
 print("Done with scraping from each link.\n\n")
 
-print(names)
-print(addresses)
-print(sqms)
-print(room_numbs)
-print(prices)
-print(descriptions)
-print(abouts)
-print(features)
+# checking list lengths to avoid any bugs
+if len(names) == len(addresses) == len(sqms) == len(room_numbs) == len(prices) == len(descriptions) == len(abouts) == len(features):
+    print(("All lists has the same length ({})").format(len(names)))
+    # creating data frame and saving it into a .csv file
+    df = pd.DataFrame({"Name": names, "Link": links, "Address": addresses, "SQM": sqms, "Number of rooms": room_numbs,
+                       "Price": prices, "Description": descriptions, "About": abouts, "Features": features})
+    df.to_csv("Immobilier_scraping_database.csv", index=False)
+else:
+    print("There is a potential bug, lists have different length!")
+
 
 
 
