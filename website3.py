@@ -14,11 +14,8 @@ print("Openning browser...\n\n")
 # store the path of the driver file in the brackets
 driver = webdriver.Chrome("C:/Users/potek/Jupyter_projects/chromedriver_win32/chromedriver.exe")
 # open the url you would like to request
-driver.get("https://www.anibis.ch/fr/c/immobilier-immobilier-locations?sct=GE")#comment
-<<<<<<< HEAD
+driver.get("https://www.anibis.ch/fr/c/immobilier-immobilier-locations?sct=GE")
+# waiting until cookies tab is open
 time.sleep(2)
-=======
-time.sleep(4)
->>>>>>> be8007c (merge (#6))
 # close cookies tab
 driver.find_element_by_class_name("cmp-closebutton_closeButton.cmp-closebutton_hasBorder").click()
