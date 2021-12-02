@@ -141,3 +141,12 @@ for num, link in enumerate(links):
 
     time.sleep(0.5)
 print("Done with scraping from each link.\n\n")
+
+# saving into dataframe to take a look in jupyter notebook
+df = pd.DataFrame({"Link" : links, "Header": headers, "Details": details, "Description" : descriptions, "Address" : addresses, "Announcer" : announcers, "Announce" : announces})
+# removing all the brackets from the dataframe
+for col in df:
+    df[col] =df[col].astype(str).str.replace("[","").str.replace("]","")
+    df[col] =df[col].astype(str).str.replace("{","").str.replace("}","")
+# saving the dataframe to a csv file
+df.to_csv("Anibis_web_scraping.csv", index=False)
