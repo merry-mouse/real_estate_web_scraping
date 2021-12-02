@@ -19,3 +19,12 @@ driver.get("https://www.anibis.ch/fr/c/immobilier-immobilier-locations?sct=GE")
 time.sleep(2)
 # close cookies tab
 driver.find_element_by_class_name("cmp-closebutton_closeButton.cmp-closebutton_hasBorder").click()
+
+# scraping the number of hits and pages found
+print("Checking how many apartments there are on the website...\n\n")
+num_hits_raw = driver.find_element_by_class_name("sc-1uujbw0-0.sc-1uujbw0-2.hnhhTs.jOORWi").get_attribute("innerText")
+num_hits = int((re.search("^(\d)'(\d+)", num_hits_raw).group(0)).replace("'",""))
+# there are 20 apartments per page, using math.ceil to find ceil number after division
+num_pages = math.ceil(num_hits/20)
+print("There are {} items on {} pages found.\n\n".format(num_hits, num_pages))
+
