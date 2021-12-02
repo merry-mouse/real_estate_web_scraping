@@ -141,11 +141,3 @@ for num, link in enumerate(links):
 
     time.sleep(0.5)
 print("Done with scraping from each link.\n\n")
-
-print(headers)
-print(details)
-print(descriptions)
-print(addresses)
-print(announcers)
-print(announces)
-print(tels)
